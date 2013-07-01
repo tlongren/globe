@@ -27,9 +27,18 @@ App = Ember.Application.createWithMixins({
     }.observes('message')
 });
 
+// tell app to delay initialization
+App.deferReadiness();
+
 App.static = {
     titleSuffix: 'Tor Onionoo Search',
     version: '0.1',
+    db: {
+        name: 'tos',
+        prefix: 'tos_',
+        details: 'details',
+        detailsStoreTimeout: 1000 * 60 * 60 * 24
+    },
     messages: {
         detailsNotFound: 'No details found.'
     },
@@ -353,6 +362,33 @@ for(var country in App.static.countries){
         });
     }
 }
+
+
+// create indexDB stores
+var testIndexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
+App.Store = {
+    isUseable: testIndexedDB !== 'undefined'
+};
+
+$.indexedDB(App.static.db.name, {
+    'version': 1,
+    'schema': {
+        '1': function(versionTransaction){
+            var detail = versionTransaction.createObjectStore(App.static.db.details, {
+                'keyPath': 'fingerprint'
+            });
+
+        }
+    }
+}).done(function(){
+        console.log('indexedDB opened');
+        App.Store.Detail = $.indexedDB(App.static.db.name).objectStore(App.static.db.details);
+
+        // initalize app if database is ready
+        App.advanceReadiness();
+});
+
+
 
 $(document).ready(function(){
 
