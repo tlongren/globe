@@ -350,7 +350,7 @@ module.exports = function(grunt) {
 
 
     standaloneTasks= cleanBuild.concat(standaloneTasks).concat(['clean:tmp']);
-    defaultTasks = cleanBuild.concat(defaultTasks).concat(['clean:tmp']);
+    defaultTasks = cleanBuild.concat(defaultTasks);//.concat(['clean:tmp']);
 
     grunt.registerTask('default', defaultTasks);
     grunt.registerTask('dev', defaultTasks.concat(['watch']));

@@ -31,9 +31,19 @@ App.OnionooDetail.reopenClass({
         }
         return details;
     },
-    find: function(fingerprint, isHashed){
+    /**
+     * Requests a details lookup on the onionoo api using a fingerprint and given fields
+     * @param fingerprint string
+     * @param isHashed boolean if fingerprint is already hashed
+     * @param fields array if set, use the fields api param to limit response fields
+     * @returns {*}
+     */
+        // TODO: refactor function parameter to "holder" object
+    find: function(fingerprint, isHashed, fields, state){
+
         var that = this;
-        var hashedFingerprint = fingerprint;
+        var hashedFingerprint = fingerprint,
+            hasFields = (fields && fields.length);
 
         if(!isHashed){
             // use generate hashed fingerprint if not already hashed
@@ -43,17 +53,26 @@ App.OnionooDetail.reopenClass({
         hashedFingerprint = hashedFingerprint.toUpperCase();
 
         var storedDetail = App.TemporaryStore.find('details', hashedFingerprint);
-        if(storedDetail === undefined){
+        if(storedDetail === undefined ||
+            (storedDetail._meta && !storedDetail._meta.complete) &&
+            state > storedDetail._meta.state){
             // has no detail stored
 
             App.incrementProperty('loading');
 
-            return $.getJSON('https://onionoo.torproject.org/details?lookup=' + hashedFingerprint, {}).then(function(result){
+            var fieldParam = hasFields ? '&fields=' + fields.join(',') : '';
+
+            return $.getJSON('https://onionoo.torproject.org/details?lookup=' + hashedFingerprint + fieldParam, {}).then(function(result){
                 var detailObj = that.applyDetailDefaults(result);
 
                 App.decrementProperty('loading');
 
-                App.TemporaryStore.store('details', hashedFingerprint, detailObj);
+                App.TemporaryStore.store('details', hashedFingerprint, $.extend({}, detailObj, {
+                    _meta: {
+                        complete: hasFields ? false : true,
+                        state: state
+                    }
+                }));
                 return  detailObj;
             });
 

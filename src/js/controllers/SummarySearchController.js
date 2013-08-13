@@ -23,6 +23,7 @@ App.SummarySearchController = Ember.ArrayController.extend({
     }.property('active'),
 
     relaysChanged: function(){
+        var fields = ['fingerprint', 'nickname', 'advertised_bandwidth', 'last_restarted', 'country', 'flags', 'or_addresses', 'dir_address'];
         var relaysController = this.get('relays');
         relaysController.clear();
         var relays = this.get('relays.summaries');
@@ -33,7 +34,7 @@ App.SummarySearchController = Ember.ArrayController.extend({
                 if(!relay['f'].length){
                     throw 'Relay has no fingerprint';
                 }else{
-                    App.OnionooDetail.find(relay['f']).then(function(item){
+                    App.OnionooDetail.find(relay['f'], false, fields, App.static.requestObjectState.SUMMARY).then(function(item){
                         relaysController.addObject(item.relay);
                     });
                 }
@@ -43,6 +44,7 @@ App.SummarySearchController = Ember.ArrayController.extend({
     }.observes('relays.summaries'),
 
     bridgesChanged: function(){
+        var fields = ['hashed_fingerprint', 'nickname', 'advertised_bandwidth', 'last_restarted', 'flags', 'running'];
         var bridgesController = this.get('bridges');
         bridgesController.clear();
         var bridges = this.get('bridges.summaries');
@@ -53,7 +55,7 @@ App.SummarySearchController = Ember.ArrayController.extend({
                 if(!bridge['h'].length){
                     throw 'Bridge has no hashed fingerprint';
                 }else{
-                    App.OnionooDetail.find(bridge['h'], true).then(function(item){
+                    App.OnionooDetail.find(bridge['h'], true, fields, App.static.requestObjectState.SUMMARY).then(function(item){
                         bridgesController.addObject(item.bridge);
                     });
                 }

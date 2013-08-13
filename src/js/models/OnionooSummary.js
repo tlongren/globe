@@ -77,12 +77,15 @@ App.OnionooSummary.reopenClass({
     },
     top10: function(order){
         var that = this;
+        var fields = ['fingerprint', 'nickname', 'advertised_bandwidth', 'last_restarted', 'country', 'flags', 'or_addresses', 'dir_address'],
+            fieldParams = '&fields=' + fields.join(',');
+
 
         // right now a fixed order
         order = '-consensus_weight';
 
         App.incrementProperty('loading');
-        return $.getJSON('https://onionoo.torproject.org/details?type=relay&order=' + order + '&limit=10', {}).then(function(result){
+        return $.getJSON('https://onionoo.torproject.org/details?type=relay&order=' + order + '&limit=10' + fieldParams, {}).then(function(result){
             App.decrementProperty('loading');
 
             return that.applySummaryDefaults(result, {

@@ -71,6 +71,12 @@ App.static = {
     titleSuffix: 'Globe',
     version: '/* @echo VERSION */',
 
+    requestObjectState: {
+        EMPTY: 0,
+        SUMMARY: 1,
+        COMPLETE: 2
+    },
+
     numbers: {
         maxSearchResults: 50
     },
@@ -388,7 +394,7 @@ App.static = {
     countriesArray: []
 };
 
-App.static.messages.specifyYourSearch = 'To avoid too many requests, we limit our results to ' + App.static.numbers.maxSearchResults + ' items. If you want better results, try to use a search word or apply some filters.';
+App.static.messages.specifyYourSearch = 'To reduce waiting time and limit bandwidth usage, we limit our results to ' + App.static.numbers.maxSearchResults + ' items. If you want better results, try to refine your search.';
 
 App.set('message', App.static.welcomes[0|(Math.random() * App.static.welcomes.length)]);
 

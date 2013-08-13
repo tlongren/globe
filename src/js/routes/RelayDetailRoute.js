@@ -5,7 +5,8 @@ App.RelayDetailRoute = Ember.Route.extend({
     },
     setupController: function(controller, fingerprint){
 
-        var item = App.OnionooDetail.find(fingerprint).then(function(item){
+        var State = App.static.requestObjectState;
+        var item = App.OnionooDetail.find(fingerprint, false, undefined, State.COMPLETE).then(function(item){
 
             item = item.relay;
             controller.set('model', item);
